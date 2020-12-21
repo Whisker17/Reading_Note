@@ -55,3 +55,23 @@ Nervos CKB 是一种「链下计算，链上验证」的平台，因此提交交
 在传统的智能合约平台中，网络参与者有着不同的意图 - **用户希望更加低廉的交易手续费，开发者希望自己的应用可以得到广泛使用，矿工们希望获取更高额的收入，持有者希望持有的代币可以增值**。每一类参与者的利益并不是完全一致的，甚至，各自的利益诉求可能发生冲突 - 例如，广泛的应用使用不可能让交易变得低廉（相反，随着区块链的使用需求增加，交易应该更加昂贵）；更加低廉的交易也不会给矿工增加收入；高涨的代币价格对于交易的成本也没有任何帮助（倘若用户不调整其本地交易费用的设置，则可能发生相反的情况）。**去中心化计算平台通过处理交易提供价值，基于这类平台的代币价格并不会实质性地改变整个网络的内在价值。**
 
 在 Nervos CKB 中，**存储资产的用户希望其资产安全；开发者希望(其产品)得到更多地使用，并与之相应，保存更多的资产价值；矿工们希望获得更高的收入，而代币持有者希望他们的代币价格升值**。更高的代币价格支撑着每个人的利益 - 网络变得更加安全，矿工得到更高额的收入，代币持有者得到更丰厚的回报。梳理齐整所有参与者的激励，将使得全网可以最好地利用网络效应来增强其内在价值。此外，这也会培养出一个更具凝聚力的社区，使得整个Nervos系统面临更少的治理挑战。
+
+## Force Bridge
+
+[Force Bridge](https://github.com/nervosnetwork/force-bridge-eth/blob/6eaa18f8f2fe120cbfb2c6f6c008a4d3fe0996bd/docs/introduction.md#features) 是一个可以同时让 Nervos CKB 和多条公链、联盟链进行互操作的跨链解决方案。
+
+Force Bridge 采取的是 SPV 简单支付验证（ [SPV ， Simplified Payment Verification](https://en.bitcoinwiki.org/wiki/Simplified_Payment_Verification_) ）的方式，也就是说在两条要进行跨链的链上，都分别有以智能合约实现的只维护该链区块头（block header）的轻节点，去验证某笔带有另一条链交易的 merkle proof 以及交易信息等数据的交易。例如如果我们要以太坊验证 CKB 的交易，只要在以太坊的链上有 CKB 链上用来做序列化的 [molecule](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md) ，以及用来进行加密的 [blake2b](https://www.blake2.net/) 签名算法库， CKB 的轻节点就能在 ETH 上建构。
+
+![image-10](https://talk.nervos.org/uploads/default/optimized/2X/a/a67e76b4d389a59b69b4f7e6184e81c8a165b5aa_2_690x361.png)
+
+最后，和大家稍微整理一下 Force bridge 的特征和优点：
+
+1. **安全**：首先是足够的安全，因为任何交易的有效性基本上是透过两条链的轻节点以及它的 merkle proof 去进行验证，因此安全是两条链的矿工（或者节点）所赋予的。
+
+2. **具有高度的可延展性**：有赖于 Force Bridge 足够简单的架构，以及 CKB 编程模型的灵活性，我们可以看到 Force Bridge 有很大的延展性：
+
+   - 支持任何 ETH 和 ERC 20 资产，甚至在未来的版本还支持包含 ERC 721 等等在 CKB 链上可被 ETH 轻节点验证的资产。
+
+   - 对于 ForceBridge 而言，将资产跨链给到 CKB 上的合约或者个人，意思是一样的，例如Alice 从 ETH 上把资产给到在 CKB 链上的 Bob ，和给到 CKB 链上的 DEX ，其实要做的事情都是一模一样的。
+
+3. 使用**体验滑顺**，有赖于 pw core ， 一个以太坊钱包可以完成 ForceBridge 上两条链的交易和资产操作。
