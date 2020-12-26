@@ -60,7 +60,12 @@ Nervos CKB 是一种「链下计算，链上验证」的平台，因此提交交
 
 [Force Bridge](https://github.com/nervosnetwork/force-bridge-eth/blob/6eaa18f8f2fe120cbfb2c6f6c008a4d3fe0996bd/docs/introduction.md#features) 是一个可以同时让 Nervos CKB 和多条公链、联盟链进行互操作的跨链解决方案。
 
-Force Bridge 采取的是 SPV 简单支付验证（ [SPV ， Simplified Payment Verification](https://en.bitcoinwiki.org/wiki/Simplified_Payment_Verification_) ）的方式，也就是说在两条要进行跨链的链上，都分别有以智能合约实现的只维护该链区块头（block header）的轻节点，去验证某笔带有另一条链交易的 merkle proof 以及交易信息等数据的交易。例如如果我们要以太坊验证 CKB 的交易，只要在以太坊的链上有 CKB 链上用来做序列化的 [molecule](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md) ，以及用来进行加密的 [blake2b](https://www.blake2.net/) 签名算法库， CKB 的轻节点就能在 ETH 上建构。
+众所周知，跨链协议需要解决两个重要的问题：
+
+1. 跨链消息的可信度，即跨链消息的真实性可以被验证
+2. 跨链消息的互通性，即消息可以被另一端解码理解
+
+针对这两个问题，Force Bridge 采取的是 SPV 简单支付验证（ [SPV ， Simplified Payment Verification](https://en.bitcoinwiki.org/wiki/Simplified_Payment_Verification_) ）的方式，也就是说在两条要进行跨链的链上，都分别有以智能合约实现的只维护该链区块头（block header）的轻节点，去验证某笔带有另一条链交易的 merkle proof 以及交易信息等数据的交易。例如如果我们要以太坊验证 CKB 的交易，只要在以太坊的链上有 CKB 链上用来做序列化的 [molecule](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0008-serialization/0008-serialization.md) ，以及用来进行加密的 [blake2b](https://www.blake2.net/) 签名算法库， CKB 的轻节点就能在 ETH 上建构。
 
 ![image-10](https://talk.nervos.org/uploads/default/optimized/2X/a/a67e76b4d389a59b69b4f7e6184e81c8a165b5aa_2_690x361.png)
 
@@ -69,9 +74,8 @@ Force Bridge 采取的是 SPV 简单支付验证（ [SPV ， Simplified Payment 
 1. **安全**：首先是足够的安全，因为任何交易的有效性基本上是透过两条链的轻节点以及它的 merkle proof 去进行验证，因此安全是两条链的矿工（或者节点）所赋予的。
 
 2. **具有高度的可延展性**：有赖于 Force Bridge 足够简单的架构，以及 CKB 编程模型的灵活性，我们可以看到 Force Bridge 有很大的延展性：
-
-   - 支持任何 ETH 和 ERC 20 资产，甚至在未来的版本还支持包含 ERC 721 等等在 CKB 链上可被 ETH 轻节点验证的资产。
-
-   - 对于 ForceBridge 而言，将资产跨链给到 CKB 上的合约或者个人，意思是一样的，例如Alice 从 ETH 上把资产给到在 CKB 链上的 Bob ，和给到 CKB 链上的 DEX ，其实要做的事情都是一模一样的。
-
+- 支持任何 ETH 和 ERC 20 资产，甚至在未来的版本还支持包含 ERC 721 等等在 CKB 链上可被 ETH 轻节点验证的资产。
+   
+- 对于 ForceBridge 而言，将资产跨链给到 CKB 上的合约或者个人，意思是一样的，例如Alice 从 ETH 上把资产给到在 CKB 链上的 Bob ，和给到 CKB 链上的 DEX ，其实要做的事情都是一模一样的。
+   
 3. 使用**体验滑顺**，有赖于 pw core ， 一个以太坊钱包可以完成 ForceBridge 上两条链的交易和资产操作。
