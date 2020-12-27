@@ -8,14 +8,20 @@
 - force bridge
 - gliaswap
 
+首先我们要明确 CKB 在设计之初试图去解决的问题：
+
+1. [状态爆炸](https://talk.nervos.org/t/topic/1515) 引起的公地悲剧及去中心化的丧失
+2. [计算和验证耦合在了一起](https://talk.nervos.org/t/layer-1/1486) 使得无论是计算还是验证都失去了灵活性，难以扩展；
+3. [交易与价值存储这两个目标的内在矛盾](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0015-ckb-cryptoeconomics/0015-ckb-cryptoeconomics.md#3-preservational-and-transactional-smart-contract-platforms)，Layer 2和跨链的出现将放大这种矛盾，并对Layer 1的经济产生非常负面的影响；
+
 ## Cell 模型
 
 Cell 是 CKB 中最基本的状态单元，用户可以在其中包含任意的状态。一个 Cell 由以下几个字段组成:
 
 - `容量(capacity)`：Cell 的大小限制。一个 Cell 的大小是指包含所有字段的总字节数。
 - `数据(data)`：状态数据存储在 Cell 中。它可以是空的，Cell 的总字节数必须总是小于或等于 Cell 的容量。
-- `类型脚本(type)`：验证状态的脚本。
-- `锁定脚本(lock)`: 代表 Cell 的所有权的脚本。只有 Cell 的所有者才能转移 Cell。
+- `类型脚本(type)`：验证状态的脚本。在**验证交易输出**的时候执行，确保用户生成的新状态符合类型约束，正确生成了新的 Cells 。
+- `锁定脚本(lock)`: 代表 Cell 的所有权的脚本。只有 Cell 的所有者才能转移 Cell。在**验证交易输入**的时候执行，确保用户对输入有所有权，有权销毁输入的 Cells 。
 
 ## 密码学原语
 
@@ -75,7 +81,7 @@ Nervos CKB 是一种「链下计算，链上验证」的平台，因此提交交
 
 2. **具有高度的可延展性**：有赖于 Force Bridge 足够简单的架构，以及 CKB 编程模型的灵活性，我们可以看到 Force Bridge 有很大的延展性：
 - 支持任何 ETH 和 ERC 20 资产，甚至在未来的版本还支持包含 ERC 721 等等在 CKB 链上可被 ETH 轻节点验证的资产。
-   
+  
 - 对于 ForceBridge 而言，将资产跨链给到 CKB 上的合约或者个人，意思是一样的，例如Alice 从 ETH 上把资产给到在 CKB 链上的 Bob ，和给到 CKB 链上的 DEX ，其实要做的事情都是一模一样的。
-   
+  
 3. 使用**体验滑顺**，有赖于 pw core ， 一个以太坊钱包可以完成 ForceBridge 上两条链的交易和资产操作。
