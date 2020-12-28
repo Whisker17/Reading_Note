@@ -8,11 +8,15 @@
 - force bridge
 - gliaswap
 
+## 综述
+
 首先我们要明确 CKB 在设计之初试图去解决的问题：
 
 1. [状态爆炸](https://talk.nervos.org/t/topic/1515) 引起的公地悲剧及去中心化的丧失
 2. [计算和验证耦合在了一起](https://talk.nervos.org/t/layer-1/1486) 使得无论是计算还是验证都失去了灵活性，难以扩展；
 3. [交易与价值存储这两个目标的内在矛盾](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0015-ckb-cryptoeconomics/0015-ckb-cryptoeconomics.md#3-preservational-and-transactional-smart-contract-platforms)，Layer 2和跨链的出现将放大这种矛盾，并对Layer 1的经济产生非常负面的影响；
+
+layer1 层面应该专注于状态共识（存储），layer2 层面应该专注于状态生成（计算），我们不该用牺牲共识范围来换取性能，全球共识的代价必然是性能低下。分层网络必然是未来的方向，所以应该设计一个原生支持分层网络的系统。
 
 ## Cell 模型
 
@@ -22,6 +26,15 @@ Cell 是 CKB 中最基本的状态单元，用户可以在其中包含任意的�
 - `数据(data)`：状态数据存储在 Cell 中。它可以是空的，Cell 的总字节数必须总是小于或等于 Cell 的容量。
 - `类型脚本(type)`：验证状态的脚本。在**验证交易输出**的时候执行，确保用户生成的新状态符合类型约束，正确生成了新的 Cells 。
 - `锁定脚本(lock)`: 代表 Cell 的所有权的脚本。只有 Cell 的所有者才能转移 Cell。在**验证交易输入**的时候执行，确保用户对输入有所有权，有权销毁输入的 Cells 。
+
+通过 Cell 模型可以发行用户定义资产（User Defined Asset），可以这样来构造：
+
+1. 设计资产定义合约（Asset Definition），规定资产的主要约束（例如总数量，发行者，交易前后数量不变等）。
+2. 保存合约代码到 Asset Definition Cell 中。
+3. 在满足发行权限的情况下，发行者发行资产，并将资产状态保存在另外的 State Cell 中。State Cell 的 Type 字段引用保存了资产定义的 Code Cell，保证 State Cell 的变化受到资产定义的约束。
+4. Asset Cell 的持有者可以通过更新 Lock 来改变 Asset Cell 的所有者。
+
+Nervos CKB 的 Cell Model 使得手续费收取模型非常灵活，应用层开发者可以利用这种灵活性为终端用户带来更多的方便。
 
 ## 密码学原语
 
